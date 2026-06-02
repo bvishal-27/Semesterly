@@ -3,57 +3,106 @@
 @tailwind utilities;
 
 @layer base {
-  *, *::before, *::after { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
 
-  html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-  }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
-    @apply bg-surface-50 text-gray-900;
+    font-family: 'Nunito', sans-serif;
+    background-color: #fdfcfb;
+    color: #1c1917;
+    line-height: 1.6;
   }
 
   .dark body {
-    @apply bg-surface-950 text-gray-100;
+    background-color: #0c0a09;
+    color: #e7e5e4;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Sora', sans-serif;
-  }
-
-  code, pre {
-    font-family: 'JetBrains Mono', monospace;
-  }
+  h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.2; }
+  code, pre, .mono { font-family: 'Fira Code', monospace; }
 }
 
 @layer components {
+
+  /* ── Buttons ─────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-semibold rounded-xl
+           active:scale-[0.97] transition-all duration-150 select-none cursor-pointer;
+  }
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 text-white font-medium text-sm
-           hover:bg-brand-700 active:scale-95 transition-all duration-150 shadow-sm;
+    @apply btn px-5 py-2.5 text-sm
+           bg-ink-500 hover:bg-ink-600 text-white shadow-sm;
   }
-  .btn-secondary {
-    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700
-           text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-100 dark:hover:bg-gray-800
-           active:scale-95 transition-all duration-150;
+  .btn-ghost {
+    @apply btn px-4 py-2 text-sm
+           text-stone-600 dark:text-stone-400
+           hover:bg-stone-100 dark:hover:bg-stone-800/60;
   }
+  .btn-outline {
+    @apply btn px-4 py-2 text-sm border border-stone-200 dark:border-stone-700
+           text-stone-700 dark:text-stone-300
+           hover:bg-stone-50 dark:hover:bg-stone-800/50;
+  }
+
+  /* ── Card ────────────────────────────────────────── */
   .card {
-    @apply bg-white dark:bg-surface-800 rounded-2xl border border-gray-100 dark:border-gray-800
-           shadow-sm hover:shadow-md transition-shadow duration-200;
+    @apply bg-white dark:bg-canvas-800
+           border border-stone-200/80 dark:border-stone-800
+           rounded-2xl shadow-card;
   }
-  .input {
-    @apply w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700
-           bg-white dark:bg-surface-800 text-gray-900 dark:text-gray-100 text-sm
-           focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent
-           placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-150;
+
+  /* ── Input ───────────────────────────────────────── */
+  .field {
+    @apply w-full px-4 py-3 rounded-xl text-sm
+           bg-white dark:bg-canvas-800
+           border border-stone-200 dark:border-stone-700
+           text-stone-900 dark:text-stone-100
+           placeholder-stone-400 dark:placeholder-stone-500
+           focus:outline-none focus:ring-2 focus:ring-ink-400/50 focus:border-ink-400
+           transition-all duration-150;
   }
-  .badge {
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
+
+  /* ── Badge ───────────────────────────────────────── */
+  .tag {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold;
+  }
+  .tag-notes  { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400; }
+  .tag-qpaper { @apply bg-amber-50   text-amber-700   dark:bg-amber-900/30   dark:text-amber-400;   }
+  .tag-solved { @apply bg-sky-50     text-sky-700     dark:bg-sky-900/30     dark:text-sky-400;     }
+
+  /* ── Pill filter ─────────────────────────────────── */
+  .pill {
+    @apply px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 cursor-pointer select-none;
+  }
+  .pill-inactive {
+    @apply border-stone-200 dark:border-stone-700
+           text-stone-500 dark:text-stone-400
+           hover:border-stone-300 dark:hover:border-stone-600
+           hover:text-stone-700 dark:hover:text-stone-300
+           bg-white dark:bg-canvas-900;
+  }
+  .pill-active {
+    @apply border-ink-500 bg-ink-500 text-white shadow-sm;
   }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar       { width: 6px; height: 6px; }
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-gray-700 rounded-full; }
+::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 99px; }
+.dark ::-webkit-scrollbar-thumb { background: #44403c; }
+
+/* ── Staggered card animation ──────────────────────── */
+.card-grid > *:nth-child(1)  { animation-delay: 0.03s }
+.card-grid > *:nth-child(2)  { animation-delay: 0.06s }
+.card-grid > *:nth-child(3)  { animation-delay: 0.09s }
+.card-grid > *:nth-child(4)  { animation-delay: 0.12s }
+.card-grid > *:nth-child(5)  { animation-delay: 0.15s }
+.card-grid > *:nth-child(6)  { animation-delay: 0.18s }
+.card-grid > *:nth-child(7)  { animation-delay: 0.21s }
+.card-grid > *:nth-child(8)  { animation-delay: 0.24s }
+.card-grid > *:nth-child(9)  { animation-delay: 0.27s }
+.card-grid > *:nth-child(10) { animation-delay: 0.30s }
+.card-grid > *:nth-child(11) { animation-delay: 0.33s }
+.card-grid > *:nth-child(12) { animation-delay: 0.36s }
