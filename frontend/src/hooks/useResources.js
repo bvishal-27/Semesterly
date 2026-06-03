@@ -1,17 +1,18 @@
 import { useState, useEffect, useCallback } from 'react'
 import { resourceService } from '../services/resourceService'
 
-export function useResources(filters = {}) {
+export function useResources(filters) {
   const [resources, setResources] = useState([])
   const [total, setTotal]         = useState(0)
   const [pages, setPages]         = useState(1)
-  const [loading, setLoading]     = useState(true)
+  const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState(null)
 
   const fetchResources = useCallback(async () => {
+    // if filters is null, don't fetch at all
+    if (!filters) { setResources([]); setLoading(false); return }
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true); setError(null)
       const { data } = await resourceService.getAll(filters)
       setResources(data.resources || [])
       setTotal(data.total || 0)

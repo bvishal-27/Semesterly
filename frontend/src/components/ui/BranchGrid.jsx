@@ -1,32 +1,33 @@
 const BRANCHES = [
-  { key: 'CSE', short: 'CSE', label: 'Computer Science',     emoji: '💻', bg: 'hover:bg-violet-50 dark:hover:bg-violet-900/20', active: 'bg-violet-600 text-white border-violet-600', ring: 'border-violet-200 dark:border-violet-800' },
-  { key: 'ECE', short: 'ECE', label: 'Electronics & Comm.',  emoji: '📡', bg: 'hover:bg-blue-50   dark:hover:bg-blue-900/20',   active: 'bg-blue-600   text-white border-blue-600',   ring: 'border-blue-200   dark:border-blue-800'   },
-  { key: 'ME',  short: 'ME',  label: 'Mechanical',           emoji: '⚙️',  bg: 'hover:bg-orange-50 dark:hover:bg-orange-900/20', active: 'bg-orange-500 text-white border-orange-500', ring: 'border-orange-200 dark:border-orange-800' },
-  { key: 'CE',  short: 'CE',  label: 'Civil',                emoji: '🏗️',  bg: 'hover:bg-teal-50   dark:hover:bg-teal-900/20',   active: 'bg-teal-600   text-white border-teal-600',   ring: 'border-teal-200   dark:border-teal-800'   },
-  { key: 'EEE', short: 'EEE', label: 'Electrical',           emoji: '⚡',  bg: 'hover:bg-yellow-50 dark:hover:bg-yellow-900/20', active: 'bg-yellow-500 text-white border-yellow-500', ring: 'border-yellow-200 dark:border-yellow-800' },
-  { key: 'IT',  short: 'IT',  label: 'Info. Technology',     emoji: '🌐', bg: 'hover:bg-cyan-50   dark:hover:bg-cyan-900/20',   active: 'bg-cyan-600   text-white border-cyan-600',   ring: 'border-cyan-200   dark:border-cyan-800'   },
+  { key: 'CSE', emoji: '💻', label: 'Comp. Science',  activeClass: 'bg-violet-500  border-violet-500  text-white' },
+  { key: 'ECE', emoji: '📡', label: 'Electronics',    activeClass: 'bg-blue-500    border-blue-500    text-white' },
+  { key: 'ME',  emoji: '⚙️',  label: 'Mechanical',    activeClass: 'bg-orange-500  border-orange-500  text-white' },
+  { key: 'CE',  emoji: '🏗️',  label: 'Civil',         activeClass: 'bg-teal-500    border-teal-500    text-white' },
+  { key: 'EEE', emoji: '⚡',  label: 'Electrical',    activeClass: 'bg-yellow-500  border-yellow-500  text-white' },
+  { key: 'IT',  emoji: '🌐', label: 'Info. Tech.',    activeClass: 'bg-cyan-500    border-cyan-500    text-white' },
 ]
 
 export default function BranchGrid({ selected, onSelect }) {
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest">Branch</p>
+      <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Browse by Branch</p>
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
         {BRANCHES.map(b => {
-          const isActive = selected === b.key
+          const active = selected === b.key
           return (
-            <button key={b.key} onClick={() => onSelect(isActive ? 'all' : b.key)}
-              className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl border-2 font-semibold
-                          transition-all duration-150 active:scale-95 select-none
-                          ${isActive
-                            ? b.active + ' shadow-md scale-[1.02]'
-                            : `bg-white dark:bg-canvas-800 ${b.ring} ${b.bg} text-stone-700 dark:text-stone-300`
-                          }`}>
+            <button key={b.key}
+              onClick={() => onSelect(active ? 'all' : b.key)}
+              className={`flex flex-col items-center gap-2 py-4 px-2 rounded-2xl border-2 font-semibold
+                transition-all duration-150 active:scale-95 select-none
+                ${active
+                  ? `${b.activeClass} shadow-md scale-[1.03]`
+                  : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700'
+                }`}>
               <span className="text-2xl leading-none">{b.emoji}</span>
-              <div className="text-center">
-                <p className="font-display text-xs font-bold leading-tight">{b.short}</p>
-                <p className={`text-[10px] leading-tight mt-0.5 hidden sm:block font-medium
-                  ${isActive ? 'text-white/80' : 'text-stone-400 dark:text-stone-500'}`}>
+              <div>
+                <p className="text-xs font-bold leading-tight">{b.key}</p>
+                <p className={`text-[10px] leading-tight mt-0.5 hidden sm:block
+                  ${active ? 'text-white/80' : 'text-gray-400 dark:text-gray-500'}`}>
                   {b.label}
                 </p>
               </div>

@@ -1,62 +1,60 @@
-import { BookMarked, Heart, Shield, Zap, Globe, Github } from 'lucide-react'
+import { BookOpen, Heart, Shield, Zap, Globe, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const FEATURES = [
-  { icon: Zap,    title: 'Instant access',     desc: 'No login needed for students. Find and open any resource in seconds.' },
-  { icon: Globe,  title: 'Always free',         desc: 'Built on free infrastructure. No ads, no paywalls, no subscriptions.' },
-  { icon: Shield, title: 'Public sources only', desc: 'All resources are from publicly available sources. We only organise them.' },
-  { icon: Heart,  title: 'Made by students',    desc: 'Built by an engineering student who was tired of hunting for resources.' },
+  { icon: Zap,    color: 'bg-amber-50 dark:bg-amber-500/10 text-amber-500',    title: 'Instant access',      desc: 'No login, no signup. Open any resource in one click.' },
+  { icon: Globe,  color: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500', title: 'Always free',      desc: 'No ads, no paywalls, no subscriptions — ever.' },
+  { icon: Shield, color: 'bg-sky-50 dark:bg-sky-500/10 text-sky-500',          title: 'Public sources only', desc: 'All resources from publicly available internet sources.' },
+  { icon: Users,  color: 'bg-violet-50 dark:bg-violet-500/10 text-violet-500', title: 'Built for students',  desc: 'Made by an engineering student who needed this.' },
 ]
 
 export default function About() {
   return (
-    <div className="max-w-2xl mx-auto space-y-10 py-4 animate-fade-up">
-      {/* Hero */}
-      <div className="text-center space-y-3">
+    <div className="max-w-2xl mx-auto space-y-12 py-6 animate-fade-up">
+      <div className="text-center space-y-4">
         <div className="flex justify-center">
-          <div className="p-4 rounded-2xl bg-brand-50 dark:bg-brand-900/30">
-            <BookMarked className="w-8 h-8 text-brand-600 dark:text-brand-400" />
+          <div className="w-16 h-16 rounded-3xl bg-primary-500 flex items-center justify-center shadow-glow">
+            <BookOpen className="w-8 h-8 text-white" strokeWidth={2} />
           </div>
         </div>
-        <h1 className="font-display text-3xl font-bold text-gray-900 dark:text-gray-50">About Semesterly</h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-          Semesterly is a free resource hub for engineering students — built to make notes, question papers, and solved papers easy to find and access, without wasting time searching everywhere.
+        <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">About Semesterly</h1>
+        <p className="text-gray-400 leading-relaxed">
+          Semesterly is a free resource hub for engineering students. One place for notes, question papers, and solved papers — no hunting across WhatsApp groups, Telegram channels, or random websites.
         </p>
       </div>
 
-      {/* Features */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {FEATURES.map(f => (
-          <div key={f.title} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 space-y-2">
-            <div className="p-2 w-fit rounded-xl bg-brand-50 dark:bg-brand-900/30">
-              <f.icon className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+          <div key={f.title} className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl p-5 space-y-3 shadow-card">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${f.color}`}>
+              <f.icon className="w-5 h-5" />
             </div>
-            <h3 className="font-display font-semibold text-sm text-gray-900 dark:text-gray-100">{f.title}</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-gray-100">{f.title}</h3>
+              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">{f.desc}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Disclaimer */}
-      <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-5 space-y-2">
-        <h3 className="font-display font-semibold text-sm text-amber-800 dark:text-amber-300 flex items-center gap-2">
+      <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20 rounded-2xl p-6 space-y-3">
+        <h3 className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-2">
           <Shield className="w-4 h-4" /> Copyright Disclaimer
         </h3>
-        <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-          All resources listed on Semesterly are collected from publicly available sources on the internet. Semesterly does not host, own, or claim copyright over any of these materials. This platform acts purely as an organiser — we store links and metadata only. All credit goes to the original authors and institutions.
+        <p className="text-sm text-amber-700/80 dark:text-amber-400/80 leading-relaxed">
+          All resources on Semesterly are collected from publicly available sources. We do not host, own, or claim copyright over any documents. This platform is a free link organiser — we store URLs and metadata only. All credit goes to original authors and institutions.
         </p>
-        <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-          If you are the original owner of any content listed here and wish to have it removed, please reach out and we will remove it immediately.
+        <p className="text-sm text-amber-700/80 dark:text-amber-400/80">
+          If you're the original owner and want your content removed, please contact us and we'll remove it immediately.
         </p>
       </div>
 
-      {/* CTA */}
-      <div className="text-center space-y-3">
-        <Link to="/" className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shadow-sm active:scale-95">
+      <div className="text-center">
+        <Link to="/" className="btn-primary px-8 py-3 text-base rounded-2xl">
           Browse Resources
         </Link>
-        <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1">
-          Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> for Engineering Students
+        <p className="text-xs text-gray-400 mt-4 flex items-center justify-center gap-1.5">
+          Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for Engineering Students
         </p>
       </div>
     </div>
