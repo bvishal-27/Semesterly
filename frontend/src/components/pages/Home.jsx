@@ -71,13 +71,13 @@ export default function Home() {
 
         <div className="space-y-3">
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.08]">
-            Find your notes,<br />
+            Everything You Need,<br />
             <span style={{ background: 'linear-gradient(90deg,#FF7F50,#54a0ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
-              ace your semester.
+              to Ace Your Semester.
             </span>
           </h1>
           <p className="text-base text-gray-400 max-w-md mx-auto font-medium leading-relaxed">
-            Notes · Q-Papers · Solved Papers — all branches, all semesters, completely free.
+            Stop Searching. Excel Every Semester. Notes, PYQs & Solved Papers in One Place.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function Home() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           <input
             className="field pl-11 pr-10 py-4 text-[15px] rounded-2xl shadow-sm"
-            placeholder="Search subject name or code — BCS401, DBMS…"
+            placeholder="Search subject code or name — BCS401, DBMS…"
             value={search}
             onChange={e => handleSearch(e.target.value)}
           />

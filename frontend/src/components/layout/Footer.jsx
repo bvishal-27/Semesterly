@@ -25,7 +25,7 @@ export default function Footer() {
           <div className="space-y-4">
             <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Pages</p>
             <div className="space-y-2.5">
-              {[['/', 'Browse'], ['/about', 'About'], ['/login', 'Admin Login']].map(([to, label]) => (
+              {[['/', 'Browse'], ['/about', 'About']].map(([to, label]) => (
                 <Link key={to} to={to}
                   className="block text-sm text-gray-500 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors font-medium">
                   {label}
@@ -46,7 +46,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-gray-100 dark:border-gray-800/60 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-gray-400 dark:text-gray-600">© {new Date().getFullYear()} Semesterly · Free forever · No ads · No login needed</p>
+          <p className="text-xs text-gray-400 dark:text-gray-600">© {new Date().getFullYear()} Semesterly · Free forever · No login needed</p>
           <p className="text-xs text-gray-300 dark:text-gray-700">All resources from public sources only</p>
         </div>
       </div>
