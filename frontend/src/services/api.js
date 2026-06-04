@@ -11,14 +11,14 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Attach token to every request
+// Attach token
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('sem_token');
   if (token) cfg.headers.Authorization = `Bearer ${token}`;
   return cfg;
 });
 
-// Handle 401 globally
+// Handle 401
 api.interceptors.response.use(
   res => res,
   err => {
