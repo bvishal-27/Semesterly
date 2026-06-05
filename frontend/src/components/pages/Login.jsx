@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { BookOpen, Eye, EyeOff, Lock } from 'lucide-react'
+import { Eye, EyeOff, Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { authService } from '../../services/resourceService'
 import { useAuth } from '../../context/AuthContext'
@@ -17,6 +17,13 @@ export default function Login() {
     e.preventDefault(); setLoading(true)
     try {
       const { data } = await authService.login(form)
+
+      if (data.user?.role !== 'admin') {
+        toast.error('Access denied — admins only')
+        setLoading(false)
+        return
+      }
+
       login(data.token); toast.success('Welcome back!')
       navigate('/admin')
     } catch (err) {
