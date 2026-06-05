@@ -1,20 +1,41 @@
-import { useState } from 'react'
-import { Plus, Trash2, RefreshCw, Pencil, X, Check, LayoutGrid, PlusCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Plus, Trash2, RefreshCw, Pencil, X, Check, Search, BarChart2, Users, Eye, TrendingUp } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { resourceService } from '../../services/resourceService'
+import { resourceService, analyticsService } from '../../services/resourceService'
 import { useResources, useStats } from '../../hooks/useResources'
 import Spinner from '../ui/Spinner'
 
 const EMPTY = { title:'', subject:'', branch:'CSE', semester:1, type:'notes', year:'', description:'', fileUrl:'' }
 const BRANCHES = ['CSE','ECE','ME','CE','EEE','IT','OTHER']
 
+function Field({ label, children }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest block">{label}</label>
+      {children}
+    </div>
+  )
+}
+
 export default function Admin() {
-  const [form, setForm]     = useState(EMPTY)
-  const [editId, setEditId] = useState(null)
-  const [saving, setSaving] = useState(false)
-  const [tab, setTab]       = useState('list')
+  const [form, setForm]         = useState(EMPTY)
+  const [editId, setEditId]     = useState(null)
+  const [saving, setSaving]     = useState(false)
+  const [tab, setTab]           = useState('list')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [analytics, setAnalytics]     = useState(null)
+
   const { resources, loading, refetch } = useResources({ limit: 200 })
   const { stats } = useStats()
+
+  // Load analytics when on analytics tab
+  useEffect(() => {
+    if (tab === 'analytics') {
+      analyticsService.getSummary()
+        .then(({ data }) => setAnalytics(data))
+        .catch(() => setAnalytics(null))
+    }
+  }, [tab])
 
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const startEdit = r => {
@@ -40,29 +61,39 @@ export default function Admin() {
     catch { toast.error('Delete failed') }
   }
 
-  const F = ({ label, children }) => (
-    <div className="space-y-1.5">
-      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">{label}</label>
-      {children}
-    </div>
-  )
+  // Filter resources by search
+  const filtered = resources.filter(r => {
+    if (!searchQuery) return true
+    const q = searchQuery.toLowerCase()
+    return r.title.toLowerCase().includes(q)
+      || r.subject.toLowerCase().includes(q)
+      || r.branch.toLowerCase().includes(q)
+  })
+
+  const TABS = [
+    { key:'list',      label:'Resources' },
+    { key:'add',       label: editId ? 'Edit' : 'Add' },
+    { key:'analytics', label:'Analytics' },
+  ]
 
   return (
     <div className="space-y-6 max-w-4xl">
+
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">Admin Panel</h1>
         <button onClick={refetch} className="btn-secondary py-2 text-xs"><RefreshCw className="w-3.5 h-3.5" /> Refresh</button>
       </div>
 
-      {/* Stats */}
+      {/* Stats strip */}
       {stats && (
         <div className="grid grid-cols-5 gap-2">
-          {[['Total',stats.total,'text-primary-500'],['Notes',stats.notes,'text-emerald-500'],
-            ['Q-Papers',stats.qpaper,'text-amber-500'],['Solved',stats.solved,'text-sky-500'],
-            ['Views',stats.views,'text-rose-500']].map(([label,value,color]) => (
-            <div key={label} className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl p-3 text-center shadow-card">
-              <p className={`font-black text-2xl tracking-tight ${color}`}>{value}</p>
-              <p className="text-[11px] font-semibold text-gray-400 mt-0.5">{label}</p>
+          {[['Total',stats.total,'#FF7F50'],['Notes',stats.notes,'#80ed99'],
+            ['Q-Papers',stats.qpaper,'#54a0ff'],['Solved',stats.solved,'#c56ef3'],
+            ['Opens',stats.views,'#fd79a8']].map(([label,value,color]) => (
+            <div key={label} className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl p-3 text-center shadow-sm">
+              <p className="font-black text-2xl tracking-tight" style={{color}}>{value}</p>
+              <p className="text-[11px] font-bold text-gray-400 mt-0.5">{label}</p>
             </div>
           ))}
         </div>
@@ -70,37 +101,90 @@ export default function Admin() {
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 dark:bg-gray-800/60 p-1 rounded-xl w-fit">
-        {[['list',<LayoutGrid className="w-3.5 h-3.5"/>,'Resources'],
-          ['add',<PlusCircle className="w-3.5 h-3.5"/>,(editId ? 'Edit' : 'Add')]].map(([t,icon,label]) => (
-          <button key={t} onClick={() => { setTab(t); if(t==='list') cancel() }}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              tab===t ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-800'
-            }`}>{icon}{label}</button>
+        {TABS.map(({ key, label }) => (
+          <button key={key} onClick={() => { setTab(key); if (key==='list') cancel() }}
+            className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
+              tab===key
+                ? 'bg-white dark:bg-gray-700 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-800'
+            }`}
+            style={tab===key ? { color:'#FF7F50' } : {}}>
+            {label}
+          </button>
         ))}
       </div>
 
-      {/* Add/Edit form */}
+      {/* ── ANALYTICS TAB ── */}
+      {tab === 'analytics' && (
+        <div className="space-y-4 animate-fade-in">
+          {!analytics ? (
+            <div className="flex justify-center py-12"><Spinner /></div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { icon: Eye,      label:'Total Page Views',   value: analytics.totalViews,    color:'#54a0ff' },
+                  { icon: Users,    label:'Unique Visitors',    value: analytics.uniqueVisitors, color:'#80ed99' },
+                  { icon: TrendingUp, label:"Today's Views",   value: analytics.todayViews,     color:'#FF7F50' },
+                  { icon: BarChart2, label:'Resource Opens',   value: analytics.resourceOpens,  color:'#c56ef3' },
+                ].map(({ icon: Icon, label, value, color }) => (
+                  <div key={label} className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon className="w-4 h-4" style={{ color }} />
+                      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">{label}</span>
+                    </div>
+                    <p className="font-black text-3xl tracking-tight" style={{ color }}>{value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Daily table */}
+              <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800">
+                  <h3 className="font-black text-sm text-gray-900 dark:text-white">Last 30 Days</h3>
+                </div>
+                <div className="divide-y divide-gray-50 dark:divide-gray-800/60 max-h-80 overflow-y-auto">
+                  {analytics.daily.slice().reverse().map(d => (
+                    <div key={d.date} className="flex items-center justify-between px-5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800/30">
+                      <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400">{d.date}</span>
+                      <div className="flex gap-6 text-xs font-bold">
+                        <span className="text-[#54a0ff]">{d.views} views</span>
+                        <span className="text-[#80ed99]">{d.unique} unique</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── ADD/EDIT TAB ── */}
       {tab === 'add' && (
-        <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-card p-6 space-y-5">
+        <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-6 space-y-5 animate-fade-in">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-gray-900 dark:text-white">
-              {editId ? 'Edit resource' : 'Add new resource'}
-            </h2>
-            {editId && <button onClick={cancel} className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"><X className="w-3 h-3"/>Cancel</button>}
+            <h2 className="font-black text-gray-900 dark:text-white">{editId ? 'Edit Resource' : 'Add New Resource'}</h2>
+            {editId && <button onClick={cancel} className="text-xs font-bold text-gray-400 hover:text-gray-600 flex items-center gap-1"><X className="w-3 h-3"/>Cancel</button>}
           </div>
           <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <F label="Title *"><input className="field" required placeholder="e.g. Data Structures Notes" value={form.title} onChange={e=>s('title',e.target.value)}/></F>
-            <F label="Subject / Code *"><input className="field" required placeholder="e.g. BCS301 / DBMS" value={form.subject} onChange={e=>s('subject',e.target.value)}/></F>
-            <F label="Branch"><select className="field" value={form.branch} onChange={e=>s('branch',e.target.value)}>{BRANCHES.map(b=><option key={b}>{b}</option>)}</select></F>
-            <F label="Semester"><select className="field" value={form.semester} onChange={e=>s('semester',+e.target.value)}>{[1,2,3,4,5,6,7,8].map(n=><option key={n} value={n}>Semester {n}</option>)}</select></F>
-            <F label="Type"><select className="field" value={form.type} onChange={e=>s('type',e.target.value)}><option value="notes">Notes</option><option value="qpaper">Q-Paper</option><option value="solved">Solved Paper</option></select></F>
-            <F label="Year (optional)"><input className="field" placeholder="e.g. 2024" value={form.year} onChange={e=>s('year',e.target.value)}/></F>
-            <div className="sm:col-span-2"><F label="File URL *"><input className="field" required type="url" placeholder="https://ik.imagekit.io/... or archive.org/..." value={form.fileUrl} onChange={e=>s('fileUrl',e.target.value)}/></F></div>
-            <div className="sm:col-span-2"><F label="Description"><textarea className="field resize-none" rows={2} placeholder="Brief description (optional)" value={form.description} onChange={e=>s('description',e.target.value)}/></F></div>
+            <Field label="Title *"><input className="field font-semibold" required placeholder="e.g. Data Structures Notes" value={form.title} onChange={e=>s('title',e.target.value)}/></Field>
+            <Field label="Subject / Code *"><input className="field font-semibold" required placeholder="e.g. BCS301 / DBMS" value={form.subject} onChange={e=>s('subject',e.target.value)}/></Field>
+            <Field label="Branch"><select className="field font-semibold" value={form.branch} onChange={e=>s('branch',e.target.value)}>{BRANCHES.map(b=><option key={b}>{b}</option>)}</select></Field>
+            <Field label="Semester"><select className="field font-semibold" value={form.semester} onChange={e=>s('semester',+e.target.value)}>{[1,2,3,4,5,6,7,8].map(n=><option key={n} value={n}>Semester {n}</option>)}</select></Field>
+            <Field label="Type"><select className="field font-semibold" value={form.type} onChange={e=>s('type',e.target.value)}><option value="notes">Notes</option><option value="qpaper">Q-Paper</option><option value="solved">Solved Paper</option></select></Field>
+            <Field label="Year"><input className="field font-semibold" placeholder="e.g. Dec2024/Jan2025" value={form.year} onChange={e=>s('year',e.target.value)}/></Field>
+            <div className="sm:col-span-2">
+              <Field label="File URL *"><input className="field font-semibold" required type="url" placeholder="https://ik.imagekit.io/... or archive.org/..." value={form.fileUrl} onChange={e=>s('fileUrl',e.target.value)}/></Field>
+            </div>
+            <div className="sm:col-span-2">
+              <Field label="Description"><textarea className="field font-semibold resize-none" rows={2} placeholder="Brief description (optional)" value={form.description} onChange={e=>s('description',e.target.value)}/></Field>
+            </div>
             <div className="sm:col-span-2 flex gap-2">
-              <button type="submit" className="btn-primary" disabled={saving}>
-                {saving ? <Spinner size="sm"/> : editId ? <><Check className="w-4 h-4"/>Save</> : <><Plus className="w-4 h-4"/>Add</>}
+              <button type="submit" disabled={saving}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-black shadow-sm active:scale-95 transition-all"
+                style={{ background:'linear-gradient(135deg,#FF7F50,#54a0ff)' }}>
+                {saving ? <Spinner size="sm"/> : editId ? <><Check className="w-4 h-4"/>Save changes</> : <><Plus className="w-4 h-4"/>Add resource</>}
               </button>
               {editId && <button type="button" onClick={cancel} className="btn-secondary">Cancel</button>}
             </div>
@@ -108,32 +192,72 @@ export default function Admin() {
         </div>
       )}
 
-      {/* List */}
+      {/* ── LIST TAB ── */}
       {tab === 'list' && (
-        <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-card overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <h2 className="font-bold text-sm text-gray-900 dark:text-white">All resources ({resources.length})</h2>
-            <button onClick={()=>setTab('add')} className="btn-primary py-1.5 text-xs"><Plus className="w-3.5 h-3.5"/>Add</button>
+        <div className="space-y-3 animate-fade-in">
+          {/* Search bar for admin */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <input
+              className="field pl-11 font-semibold"
+              placeholder="Search resources by title, subject, or branch…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
-          {loading ? (
-            <div className="flex justify-center py-12"><Spinner /></div>
-          ) : (
-            <div className="divide-y divide-gray-50 dark:divide-gray-800/60">
-              {resources.length === 0 && <p className="px-5 py-10 text-sm text-gray-400 text-center">No resources yet.</p>}
-              {resources.map(r => (
-                <div key={r._id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition-colors">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{r.title}</p>
-                    <p className="text-[11px] font-mono text-gray-400 mt-0.5">{r.subject} · Sem {r.semester} · {r.branch} · {r.type}{r.year?` · ${r.year}`:''}</p>
-                  </div>
-                  <div className="flex gap-1 shrink-0">
-                    <button onClick={()=>startEdit(r)} className="p-2 rounded-xl text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-all"><Pencil className="w-3.5 h-3.5"/></button>
-                    <button onClick={()=>remove(r._id)} className="p-2 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"><Trash2 className="w-3.5 h-3.5"/></button>
-                  </div>
-                </div>
-              ))}
+
+          <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <h2 className="font-black text-sm text-gray-900 dark:text-white">
+                {searchQuery ? `${filtered.length} results` : `All resources (${resources.length})`}
+              </h2>
+              <button onClick={() => setTab('add')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-black"
+                style={{ background:'linear-gradient(135deg,#FF7F50,#54a0ff)' }}>
+                <Plus className="w-3.5 h-3.5"/>Add new
+              </button>
             </div>
-          )}
+
+            {loading ? (
+              <div className="flex justify-center py-10"><Spinner /></div>
+            ) : (
+              <div className="divide-y divide-gray-50 dark:divide-gray-800/60">
+                {filtered.length === 0 && (
+                  <p className="px-5 py-10 text-sm font-bold text-gray-400 text-center">
+                    {searchQuery ? 'No matching resources.' : 'No resources yet.'}
+                  </p>
+                )}
+                {filtered.map(r => (
+                  <div key={r._id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-gray-800 dark:text-gray-200 truncate">{r.title}</p>
+                      <p className="text-[11px] font-mono font-semibold text-gray-400 mt-0.5">
+                        {r.subject} · Sem {r.semester} · {r.branch} · <span className="capitalize">{r.type}</span>
+                        {r.year ? ` · ${r.year}` : ''}
+                        <span className="ml-2 text-gray-300 dark:text-gray-600">{r.views} opens</span>
+                      </p>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <button onClick={() => startEdit(r)}
+                        className="p-2 rounded-xl text-gray-400 hover:text-[#54a0ff] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all">
+                        <Pencil className="w-3.5 h-3.5"/>
+                      </button>
+                      <button onClick={() => remove(r._id)}
+                        className="p-2 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all">
+                        <Trash2 className="w-3.5 h-3.5"/>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

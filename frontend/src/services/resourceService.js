@@ -15,3 +15,7 @@ export const authService = {
   register: (data)  => api.post('/auth/register', data),
   me:       ()      => api.get('/auth/me'),
 }
+
+export const analyticsService = {
+  getSummary: () => api.get('/analytics/summary'),
+}
