@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import { Sun, Moon, BookOpen, Menu, X, LogOut, Shield } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import { useAuth } from '../../context/AuthContext'
@@ -9,20 +9,7 @@ export default function Navbar() {
   const { user, logout, isAdmin } = useAuth()
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
-  const navigate = useNavigate()
 
-  // Secret: triple-click the logo → goes to /login
-  const clickCount = useRef(0)
-  const clickTimer = useRef(null)
-  const handleLogoClick = () => {
-    if (user) return // already logged in, just go home
-    clickCount.current += 1
-    clearTimeout(clickTimer.current)
-    clickTimer.current = setTimeout(() => { clickCount.current = 0 }, 700)
-    if (clickCount.current >= 3) { clickCount.current = 0; navigate('/login') }
-  }
-
-  // Public links — NO admin link shown to students
   const links = [
     { to: '/', label: 'Browse' },
     { to: '/about', label: 'About' },
@@ -32,10 +19,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-[#0f1117]/90 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-[60px] gap-4">
 
-        {/* Logo — triple click = secret admin access */}
-        <button onClick={handleLogoClick}
-          className="flex items-center gap-2.5 shrink-0 select-none"
-          title={user ? 'Semesterly' : undefined}>
+        {/* Logo — plain link, no secret tricks */}
+        <Link to="/" onClick={close} className="flex items-center gap-2.5 shrink-0 select-none">
           <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm"
             style={{ background: 'linear-gradient(135deg,#FF7F50,#54a0ff)' }}>
             <BookOpen className="w-4 h-4 text-white" strokeWidth={2.5} />
@@ -43,7 +28,7 @@ export default function Navbar() {
           <span className="font-black text-[15px] tracking-tight text-gray-900 dark:text-white">
             Semesterly
           </span>
-        </button>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-0.5 flex-1 justify-center">
@@ -58,7 +43,6 @@ export default function Navbar() {
               {label}
             </NavLink>
           ))}
-          {/* Admin link — only if logged in */}
           {isAdmin && (
             <NavLink to="/admin"
               className={({ isActive }) =>
@@ -78,14 +62,12 @@ export default function Navbar() {
             className="p-2 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
             {dark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
           </button>
-
           {user && (
             <button onClick={logout} title="Sign out"
               className="hidden sm:flex p-2 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
               <LogOut className="w-[18px] h-[18px]" />
             </button>
           )}
-
           <button onClick={() => setOpen(p => !p)}
             className="sm:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -110,8 +92,8 @@ export default function Navbar() {
           {isAdmin && (
             <NavLink to="/admin" onClick={close}
               className={({ isActive }) =>
-                `flex items-center gap-2 px-4 py-3 rounded-xl text-[15px] font-semibold transition-all ${
-                  isActive ? 'bg-blue-50 dark:bg-blue-500/10 text-[#54a0ff]' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                `flex items-center gap-2 px-4 py-3 rounded-xl text-[15px] font-semibold ${
+                  isActive ? 'bg-blue-50 dark:bg-blue-500/10 text-[#54a0ff]' : 'text-gray-600 dark:text-gray-300'
                 }`}>
               <Shield className="w-4 h-4" /> Admin Panel
             </NavLink>
