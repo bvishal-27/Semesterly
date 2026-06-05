@@ -67,7 +67,7 @@ export default function Footer() {
             </div>
           </div>
           <p className="text-[11px] font-semibold text-gray-400 leading-relaxed">
-            Free notes, Q-papers & solved papers for engineering students. All content from public sources. For students aged 17+.
+            Free notes, Q-papers & solved papers for engineering students. All content from public sources.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Semesterly · Free forever · No ads
           </p>
           <p className="text-[11px] font-semibold text-gray-300 dark:text-gray-700 flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> for students, by a student
+            Built with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> by students, for students.
           </p>
         </div>
       </div>
