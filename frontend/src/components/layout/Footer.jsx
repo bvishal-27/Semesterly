@@ -42,7 +42,7 @@ export default function Footer() {
               <Shield className="w-3 h-3" /> Disclaimer
             </p>
             <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 leading-relaxed">
-              All resources are from publicly available internet sources. We don't own or host any content. For students aged 17+.
+              All resources are from publicly available internet sources. We don't own or host any content.
             </p>
           </div>
         </div>
