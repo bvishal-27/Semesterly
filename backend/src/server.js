@@ -24,6 +24,8 @@ app.use(cors({
     const allowed = [
       'http://localhost:5173',
       'http://localhost:5174',
+      'https://semesterly.in',
+      'https://www.semesterly.in',
       process.env.FRONTEND_URL,
     ].filter(Boolean)
     if (allowed.includes(origin)) return callback(null, true)
