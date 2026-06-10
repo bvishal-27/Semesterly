@@ -16,7 +16,7 @@ cd backend
 cp .env.example .env   # fill in MONGODB_URI and JWT_SECRET
 npm install
 node src/utils/seed.js  # create admin + sample data
-npm run dev             # runs on :5001
+npm run dev             # runs on :5000
 ```
 
 ### Frontend
@@ -27,8 +27,8 @@ npm run dev             # runs on :5173
 ```
 
 ### Default admin credentials (after seed)
-- Email: 
-- Password: 
+- Email: admin@semesterly.com
+- Password: Admin@1234
 
 ## Deployment
 - Frontend → Vercel (`vercel deploy`)
