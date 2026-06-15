@@ -83,7 +83,13 @@ export default function Home() {
             placeholder="Search subject or code — BCS401, DBMS, OS…"
             value={search}
             onChange={e => handleSearch(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { setBrowsing(true); scrollToResults() } }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.target.blur()
+                setBrowsing(true)
+                scrollToResults()
+              }
+            }}
           />
           {search && (
             <button onClick={clearAll}
