@@ -165,7 +165,7 @@ export default function AnalyticsPanel() {
           <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
             <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
               <h3 className="font-black text-sm text-gray-900 dark:text-white">Daily Breakdown</h3>
-              <span className="text-[11px] font-bold text-gray-400">{data.range.from} → {data.range.to}</span>
+<span className="text-[11px] font-bold text-gray-400">{data.range?.from} → {data.range?.to}</span>
             </div>
             <div className="divide-y divide-gray-50 dark:divide-gray-800/60 max-h-80 overflow-y-auto">
               {data.daily.length === 0 && (
