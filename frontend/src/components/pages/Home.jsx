@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Search, X, BookOpen, FileText, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react'
 import ResourceCard from '../ui/ResourceCard'
 import Spinner      from '../ui/Spinner'
@@ -23,6 +23,13 @@ export default function Home() {
   const [branch, setBranch]     = useState('all')
   const [page, setPage]         = useState(1)
   const [browsing, setBrowsing] = useState(false)
+  const resultsRef = useRef(null)
+
+  const scrollToResults = () => {
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }
 
   const q = useDebounce(search)
   const shouldFetch = browsing || q.length > 0
@@ -76,6 +83,7 @@ export default function Home() {
             placeholder="Search subject or code — BCS401, DBMS, OS…"
             value={search}
             onChange={e => handleSearch(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { setBrowsing(true); scrollToResults() } }}
           />
           {search && (
             <button onClick={clearAll}
@@ -127,7 +135,7 @@ export default function Home() {
 
       {/* ── Filters ───────────────────────────── */}
       {shouldFetch && (
-        <div className="space-y-3 animate-fade-in">
+        <div ref={resultsRef} className="space-y-3 animate-fade-in">
           <div className="flex flex-wrap gap-2 items-center">
             <div className="flex gap-1.5 flex-wrap">
               {TYPES.map(({ key, label, Icon }) => (
