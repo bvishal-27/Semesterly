@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import { Plus, Trash2, RefreshCw, Pencil, X, Check, Search, BarChart2, Users, Eye, TrendingUp } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Trash2, RefreshCw, Pencil, X, Check, Search } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { resourceService, analyticsService } from '../../services/resourceService'
+import { resourceService } from '../../services/resourceService'
 import { useResources, useStats } from '../../hooks/useResources'
 import Spinner from '../ui/Spinner'
+import AnalyticsPanel from '../ui/AnalyticsPanel'
 
 const EMPTY = { title:'', subject:'', branch:'CSE', semester:1, type:'notes', year:'', description:'', fileUrl:'' }
 const BRANCHES = ['CSE','ECE','ME','CE','EEE','IT','OTHER']
@@ -23,19 +24,9 @@ export default function Admin() {
   const [saving, setSaving]     = useState(false)
   const [tab, setTab]           = useState('list')
   const [searchQuery, setSearchQuery] = useState('')
-  const [analytics, setAnalytics]     = useState(null)
 
   const { resources, loading, refetch } = useResources({ limit: 200 })
   const { stats } = useStats()
-
-  // Load analytics when on analytics tab
-  useEffect(() => {
-    if (tab === 'analytics') {
-      analyticsService.getSummary()
-        .then(({ data }) => setAnalytics(data))
-        .catch(() => setAnalytics(null))
-    }
-  }, [tab])
 
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const startEdit = r => {
@@ -115,50 +106,7 @@ export default function Admin() {
       </div>
 
       {/* ── ANALYTICS TAB ── */}
-      {tab === 'analytics' && (
-        <div className="space-y-4 animate-fade-in">
-          {!analytics ? (
-            <div className="flex justify-center py-12"><Spinner /></div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { icon: Eye,      label:'Total Page Views',   value: analytics.totalViews,    color:'#54a0ff' },
-                  { icon: Users,    label:'Unique Visitors',    value: analytics.uniqueVisitors, color:'#80ed99' },
-                  { icon: TrendingUp, label:"Today's Views",   value: analytics.todayViews,     color:'#FF7F50' },
-                  { icon: BarChart2, label:'Resource Opens',   value: analytics.resourceOpens,  color:'#c56ef3' },
-                ].map(({ icon: Icon, label, value, color }) => (
-                  <div key={label} className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon className="w-4 h-4" style={{ color }} />
-                      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">{label}</span>
-                    </div>
-                    <p className="font-black text-3xl tracking-tight" style={{ color }}>{value}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Daily table */}
-              <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
-                <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-800">
-                  <h3 className="font-black text-sm text-gray-900 dark:text-white">Last 30 Days</h3>
-                </div>
-                <div className="divide-y divide-gray-50 dark:divide-gray-800/60 max-h-80 overflow-y-auto">
-                  {analytics.daily.slice().reverse().map(d => (
-                    <div key={d.date} className="flex items-center justify-between px-5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800/30">
-                      <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400">{d.date}</span>
-                      <div className="flex gap-6 text-xs font-bold">
-                        <span className="text-[#54a0ff]">{d.views} views</span>
-                        <span className="text-[#80ed99]">{d.unique} unique</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      )}
+      {tab === 'analytics' && <AnalyticsPanel />}
 
       {/* ── ADD/EDIT TAB ── */}
       {tab === 'add' && (

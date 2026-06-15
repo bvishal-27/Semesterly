@@ -5,6 +5,7 @@ import Spinner      from '../ui/Spinner'
 import EmptyState   from '../ui/EmptyState'
 import StatsBar     from '../ui/StatsBar'
 import BranchGrid   from '../ui/BranchGrid'
+import VisitorBadge from '../ui/VisitorBadge'
 import { useResources, useDebounce } from '../../hooks/useResources'
 
 const TYPES = [
@@ -100,7 +101,9 @@ export default function Home() {
         </div>
 
         <StatsBar />
+        <VisitorBadge />
       </section>
+    
 
       {/* ── Branch grid ───────────────────────── */}
       <BranchGrid selected={branch} onSelect={handleBranchSelect} />

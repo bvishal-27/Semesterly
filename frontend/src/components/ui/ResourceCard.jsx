@@ -1,4 +1,5 @@
 import { ExternalLink, Download, Eye, BookOpen, FileText, CheckCircle2 } from 'lucide-react'
+import { resourceService } from '../../services/resourceService'
 
 const GRADIENTS = [
   { from:'#FF7F50', to:'#ff5e2e', light:false },
@@ -22,9 +23,9 @@ function pickGradient(subject = '') {
 }
 
 const TYPE_ICON = {
-  notes:  { label:'Notes',   Icon: BookOpen },
-  qpaper: { label:'Q-Paper', Icon: FileText },
-  solved: { label:'Solved',  Icon: CheckCircle2 },
+  notes:  { label: 'Notes',   Icon: BookOpen },
+  qpaper: { label: 'Q-Paper', Icon: FileText },
+  solved: { label: 'Solved',  Icon: CheckCircle2 },
 }
 
 export default function ResourceCard({ resource, index = 0 }) {
@@ -32,12 +33,15 @@ export default function ResourceCard({ resource, index = 0 }) {
   const t = TYPE_ICON[resource.type] || TYPE_ICON.notes
   const { Icon } = t
 
-  // Light cards → dark text; dark cards → white text
-  const text     = g.light ? '#1a1a1a' : '#ffffff'
-  const badgeBg  = g.light ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.22)'
-  const codeBg   = g.light ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.20)'
-  const btnBg    = g.light ? 'rgba(0,0,0,0.18)' : 'rgba(0,0,0,0.25)'
-  const metaOpacity = g.light ? '0.65' : '0.75'
+  const text    = g.light ? '#1a1a1a' : '#ffffff'
+  const badgeBg = g.light ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.22)'
+  const codeBg  = g.light ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.20)'
+  const btnBg   = g.light ? 'rgba(0,0,0,0.18)' : 'rgba(0,0,0,0.25)'
+
+  const handleOpen = () => {
+    // Track open silently — fire and forget, never block navigation
+    resourceService.trackOpen(resource._id).catch(() => {})
+  }
 
   return (
     <article
@@ -66,17 +70,13 @@ export default function ResourceCard({ resource, index = 0 }) {
         <div className="space-y-2 flex-1">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[11px] font-black tracking-[0.12em] uppercase"
             style={{ background: codeBg, color: text }}>
-            <span className="w-2 h-2 rounded-full inline-block shrink-0" style={{ background: text, opacity: 0.8 }} />
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: text, opacity: 0.8 }} />
             {resource.subject}
           </div>
-
-          {/* Title */}
           <h3 className="text-[15px] font-black leading-snug line-clamp-2 tracking-tight"
             style={{ color: text }}>
             {resource.title}
           </h3>
-
-          {/* Description */}
           {resource.description && (
             <p className="text-[12px] font-semibold leading-relaxed line-clamp-2"
               style={{ color: text, opacity: 0.75 }}>
@@ -85,13 +85,12 @@ export default function ResourceCard({ resource, index = 0 }) {
           )}
         </div>
 
-        {/* Meta row */}
+        {/* Meta */}
         <div className="flex items-center justify-between text-[11px] font-bold"
-          style={{ color: text, opacity: metaOpacity }}>
+          style={{ color: text, opacity: 0.7 }}>
           <div className="flex items-center gap-2">
             {resource.branch && (
-              <span className="px-2 py-0.5 rounded-lg font-black"
-                style={{ background: codeBg }}>
+              <span className="px-2 py-0.5 rounded-lg font-black" style={{ background: codeBg }}>
                 {resource.branch}
               </span>
             )}
@@ -106,13 +105,20 @@ export default function ResourceCard({ resource, index = 0 }) {
 
         {/* Buttons */}
         <div className="flex gap-2">
-          <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer"
+          <a
+            href={resource.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleOpen}
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[14px] font-black transition-all active:scale-95 hover:scale-[1.02]"
             style={{ background: btnBg, color: text }}>
-            <ExternalLink className="w-4 h-4" />
-            Open
+            <ExternalLink className="w-4 h-4" /> Open
           </a>
-          <a href={resource.fileUrl} download title="Download"
+          <a
+            href={resource.fileUrl}
+            download
+            title="Download"
+            onClick={handleOpen}
             className="flex items-center justify-center w-11 h-11 rounded-2xl transition-all active:scale-95 hover:scale-110"
             style={{ background: btnBg, color: text }}>
             <Download className="w-4 h-4" />
