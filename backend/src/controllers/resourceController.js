@@ -1,4 +1,5 @@
-import Resource from '../models/Resource.js'
+import Resource  from '../models/Resource.js'
+import Analytics from '../models/Analytics.js'
 
 // GET /api/resources
 export async function getResources(req, res, next) {
@@ -63,7 +64,7 @@ export async function createResource(req, res, next) {
 export async function updateResource(req, res, next) {
   try {
     const r = await Resource.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-    if (!r) return res.status(404).json({ message: 'Resource not found' })
+    if (!r) return res.status(404).json({ message: 'Resource not found' })\
     res.json({ resource: r })
   } catch (e) { next(e) }
 }
@@ -77,7 +78,7 @@ export async function deleteResource(req, res, next) {
   } catch (e) { next(e) }
 }
 
-// POST /api/resources/:id/open — called when student clicks "Open"
+// POST /api/resources/:id/open
 export async function trackOpen(req, res) {
   try {
     const r = await Resource.findByIdAndUpdate(
@@ -86,7 +87,6 @@ export async function trackOpen(req, res) {
       { new: true }
     )
     if (r) {
-      const Analytics = (await import('../models/Analytics.js')).default
       const date = new Date().toISOString().split('T')[0]
       await Analytics.findOneAndUpdate(
         { date },
