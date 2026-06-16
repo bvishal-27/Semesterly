@@ -64,7 +64,7 @@ export async function createResource(req, res, next) {
 export async function updateResource(req, res, next) {
   try {
     const r = await Resource.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-    if (!r) return res.status(404).json({ message: 'Resource not found' })\
+    if (!r) return res.status(404).json({ message: 'Resource not found' })
     res.json({ resource: r })
   } catch (e) { next(e) }
 }
