@@ -1,5 +1,6 @@
 import { BookOpen, Heart, Shield } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import VisitorBadge from '../ui/VisitorBadge'
 
 export default function Footer() {
   return (
@@ -23,6 +24,7 @@ export default function Footer() {
             <p className="text-xs text-gray-400 flex items-center gap-1">
               Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for students
             </p>
+            <VisitorBadge />
           </div>
           {/* Links */}
           <div className="space-y-3">
@@ -69,6 +71,7 @@ export default function Footer() {
           <p className="text-[11px] font-semibold text-gray-400 leading-relaxed">
             Free notes, Q-papers & solved papers for engineering students. All content from public sources.
           </p>
+          <VisitorBadge />
         </div>
 
         {/* Bottom bar — both mobile and desktop */}
