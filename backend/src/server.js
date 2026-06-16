@@ -9,7 +9,6 @@ import authRoutes                 from './routes/auth.js'
 import resourceRoutes             from './routes/resources.js'
 import analyticsRoutes            from './routes/analytics.js'
 import adminRoutes                from './routes/admin.js'
-import { trackVisit }             from './controllers/analyticsController.js'
 import { errorHandler, notFound } from './middleware/errorHandler.js'
 
 const app = express()
@@ -50,8 +49,7 @@ app.use(express.json({ limit: '10kb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 
-// ── Track visits ──────────────────────────────────────
-app.use('/api/', trackVisit)
+
 
 // ── Health check ──────────────────────────────────────
 app.get('/api/health', (_, res) =>
